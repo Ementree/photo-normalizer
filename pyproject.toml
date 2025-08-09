@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "photo-normalizer"
+version = "0.1.0"
+description = "CLI to convert photos from different smartphone models to a uniform format and order them by date."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Photo Normalizer" }
+]
+dependencies = [
+  "Pillow>=10.3.0",
+  "pillow-heif>=0.16.0",
+  "click>=8.1.7",
+  "tqdm>=4.66.4",
+  "python-dateutil>=2.9.0.post0",
+]
+
+[project.scripts]
+photo-normalizer = "photo_normalizer.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
