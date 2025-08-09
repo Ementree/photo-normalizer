@@ -10,6 +10,8 @@ class PhotoNormalizerApp {
     init() {
         this.bindEvents();
         this.updateQualityDisplay();
+        // Trigger initial validation so defaults are validated on load
+        this.runInitialValidation();
     }
 
     bindEvents() {
@@ -65,6 +67,14 @@ class PhotoNormalizerApp {
                 this.validateForm();
             });
         });
+    }
+
+    runInitialValidation() {
+        // Validate defaults on first load
+        // Fire and forget; each method updates UI accordingly
+        this.validateInputFolder();
+        this.validateOutputFolder();
+        this.validateForm();
     }
 
     async nativePickFolder(type) {

@@ -1,5 +1,6 @@
 """Web UI for Photo Normalizer."""
 
+import os
 import threading
 from pathlib import Path
 from typing import Dict, Any
@@ -20,11 +21,31 @@ app = Flask(__name__,
 # Store processing jobs
 processing_jobs: Dict[str, Dict[str, Any]] = {}
 
+# Default folders (override via env)
+DEFAULT_INPUT_DIR = Path(
+    os.getenv("DEFAULT_INPUT_DIR", (Path.cwd() / "input").as_posix())
+).resolve()
+DEFAULT_OUTPUT_DIR = Path(
+    os.getenv("DEFAULT_OUTPUT_DIR", (Path.cwd() / "output").as_posix())
+).resolve()
+
+# Detect docker runtime
+RUNNING_IN_DOCKER = bool(os.getenv("RUNNING_IN_DOCKER")) or Path("/.dockerenv").exists()
+
+# Ensure default folders exist
+DEFAULT_INPUT_DIR.mkdir(parents=True, exist_ok=True)
+DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
 
 @app.route('/')
 def index():
     """Main page with folder selection UI."""
-    return render_template('index.html')
+    return render_template(
+        'index.html',
+        default_input=str(DEFAULT_INPUT_DIR),
+        default_output=str(DEFAULT_OUTPUT_DIR),
+        running_in_docker=RUNNING_IN_DOCKER,
+    )
 
 
 @app.route('/api/validate-folder', methods=['POST'])
