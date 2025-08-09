@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Normalizer</title>
+    <link rel="stylesheet" href="{{ url_for('static_files', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <i class="fas fa-images header-icon"></i>
+                <h1>Photo Normalizer</h1>
+                <p>Convert and organize your photos with ease</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Step 1: Folder Selection -->
+            <div class="card" id="folder-selection">
+                <div class="card-header">
+                    <h2><i class="fas fa-folder-open"></i> Select Folders</h2>
+                </div>
+                <div class="card-body">
+                    <div class="folder-input-group">
+                        <label for="input-folder">
+                            <i class="fas fa-folder"></i>
+                            Input Folder (Photos to organize)
+                        </label>
+                        <div class="input-with-button">
+                            <input type="text" id="input-folder" placeholder="Choose folder containing your photos..." readonly>
+                            <button type="button" id="browse-input" class="btn btn-secondary">
+                                <i class="fas fa-search"></i> Browse
+                            </button>
+                        </div>
+                        <div class="folder-status" id="input-status"></div>
+                    </div>
+
+                    <div class="folder-input-group">
+                        <label for="output-folder">
+                            <i class="fas fa-folder-plus"></i>
+                            Output Folder (Where to save organized photos)
+                        </label>
+                        <div class="input-with-button">
+                            <input type="text" id="output-folder" placeholder="Choose destination folder...">
+                            <button type="button" id="browse-output" class="btn btn-secondary">
+                                <i class="fas fa-search"></i> Browse
+                            </button>
+                        </div>
+                        <div class="folder-status" id="output-status"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Processing Options -->
+            <div class="card" id="options-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-cogs"></i> Processing Options</h2>
+                </div>
+                <div class="card-body">
+                    <div class="options-grid">
+                        <div class="option-group">
+                            <label for="output-format">Output Format</label>
+                            <select id="output-format">
+                                <option value="jpeg" selected>JPEG</option>
+                                <option value="png">PNG</option>
+                                <option value="webp">WebP</option>
+                                <option value="tiff">TIFF</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label for="quality">Quality (1-100)</label>
+                            <input type="range" id="quality" min="1" max="100" value="90">
+                            <span class="quality-value">90</span>
+                        </div>
+
+                        <div class="option-group">
+                            <label for="subfolders">Organization</label>
+                            <select id="subfolders">
+                                <option value="none">All in one folder</option>
+                                <option value="day">By day (YYYY/MM/DD)</option>
+                                <option value="month">By month (YYYY/MM)</option>
+                                <option value="year">By year (YYYY)</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="recursive" checked>
+                                <span class="checkmark"></span>
+                                Include subfolders
+                            </label>
+                        </div>
+
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="keep-metadata" checked>
+                                <span class="checkmark"></span>
+                                Keep photo metadata
+                            </label>
+                        </div>
+
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="copy-unchanged" checked>
+                                <span class="checkmark"></span>
+                                Fast mode (copy unchanged files)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Process Button -->
+            <div class="action-section">
+                <button id="start-processing" class="btn btn-primary btn-large" disabled>
+                    <i class="fas fa-play"></i>
+                    Start Processing
+                </button>
+            </div>
+
+            <!-- Step 4: Progress Section -->
+            <div class="card" id="progress-card" style="display: none;">
+                <div class="card-header">
+                    <h2><i class="fas fa-tasks"></i> Processing Progress</h2>
+                </div>
+                <div class="card-body">
+                    <div class="progress-info">
+                        <div class="progress-status">
+                            <span id="progress-text">Initializing...</span>
+                            <span id="progress-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-details">
+                            <div>Current file: <span id="current-file">-</span></div>
+                            <div>Completed: <span id="completed-count">0</span> / <span id="total-count">0</span></div>
+                            <div>Elapsed time: <span id="elapsed-time">0s</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="card" id="results-card" style="display: none;">
+                <div class="card-header">
+                    <h2><i class="fas fa-check-circle"></i> Processing Complete</h2>
+                </div>
+                <div class="card-body">
+                    <div class="results-content">
+                        <div class="success-message">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="results-message">Photos have been successfully processed!</span>
+                        </div>
+                        <div class="results-actions">
+                            <button id="open-output-folder" class="btn btn-secondary">
+                                <i class="fas fa-folder-open"></i>
+                                Open Output Folder
+                            </button>
+                            <button id="process-more" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Process More Photos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Error Modal -->
+        <div class="modal" id="error-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+                    <button class="modal-close" id="close-error-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="error-message">An error occurred during processing.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="dismiss-error">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static_files', filename='js/app.js') }}"></script>
+</body>
+</html>

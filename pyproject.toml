@@ -17,14 +17,24 @@ dependencies = [
   "click>=8.1.7",
   "tqdm>=4.66.4",
   "python-dateutil>=2.9.0.post0",
+  "flask>=2.3.0",
 ]
 
 [project.scripts]
 photo-normalizer = "photo_normalizer.cli:main"
+photo-normalizer-web = "photo_normalizer.web_cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+photo_normalizer = [
+  "templates/*.html",
+  "static/css/*.css",
+  "static/js/*.js",
+]
 
